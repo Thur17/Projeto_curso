@@ -1,0 +1,14 @@
+docker/
+*.zip
+*.rar
+build/
+node_modules/
+vendor/
+
+/Docker/000-default.conf
+/Docker/default-ssl.conf
+/certs/ca_bundle.crt
+/certs/full_chain.crt
+/certs/server.crt
+/certs/server.key
+/Models/Model.php

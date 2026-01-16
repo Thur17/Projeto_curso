@@ -1,0 +1,10 @@
+CREATE TABLE acesso (
+id INT AUTO_INCREMENT PRIMARY KEY,
+id_perfil INT NOT NULL,
+id_permissao INT NOT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+deleted_at TIMESTAMP NULL DEFAULT NULL,
+CONSTRAINT fk_acesso_perfil FOREIGN KEY (id_perfil) REFERENCES perfil(id),
+CONSTRAINT fk_acesso_permissao FOREIGN KEY (id_permissao) REFERENCES permissao(id)
+);
