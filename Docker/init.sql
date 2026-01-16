@@ -1,179 +1,86 @@
--- ===============================
--- BANCO DE DADOS
--- ===============================
--- CREATE DATABASE IF NOT EXISTS orders_db
---   CHARACTER SET utf8mb4
---   COLLATE utf8mb4_unicode_ci;
+-- Criação do banco de dados escola_ead
+CREATE DATABASE IF NOT EXISTS escola_ead;
+USE escola_ead;
 
-USE orders_db;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- ===============================
--- PERFIL
--- ===============================
-CREATE TABLE perfil (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- ===============================
--- PERMISSAO
--- ===============================
-CREATE TABLE permissao (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(40) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL
-);
+-- --------------------------------------------------------
+-- Estrutura da tabela `cursos`
+-- --------------------------------------------------------
 
--- ===============================
--- ACESSO (perfil x permissao)
--- ===============================
-CREATE TABLE acesso (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_perfil INT NOT NULL,
-    id_permissao INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-    CONSTRAINT fk_acesso_perfil
-        FOREIGN KEY (id_perfil) REFERENCES perfil(id),
-    CONSTRAINT fk_acesso_permissao
-        FOREIGN KEY (id_permissao) REFERENCES permissao(id)
-);
+DROP TABLE IF EXISTS `cursos`;
+CREATE TABLE `cursos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(100) NOT NULL,
+  `descricao_curta` varchar(100) NOT NULL,
+  `conteudo` longtext NOT NULL,
+  `data_cadastro` datetime NOT NULL,
+  `preco` decimal(10,2) NOT NULL,
+  `imagem` varchar(140) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
--- ===============================
--- USUARIO
--- ===============================
-CREATE TABLE usuario (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    email_verified_at TIMESTAMP NULL DEFAULT NULL,
-    senha VARCHAR(100) NOT NULL,
-    id_perfil INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-    CONSTRAINT fk_usuario_perfil
-        FOREIGN KEY (id_perfil) REFERENCES perfil(id)
-);
+--
+-- Inserindo dados na tabela `cursos`
+--
 
--- ===============================
--- CATEGORIA
--- ===============================
-CREATE TABLE categoria (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL
-);
+INSERT INTO `cursos` (`id`, `titulo`, `descricao_curta`, `conteudo`, `data_cadastro`, `preco`, `imagem`) VALUES
+(3, 'PHP Essencial', 'Este é um ótimo curso sobre PHP', 'Aula 1\r\n<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/iel_hJ5hbJ8\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>\r\n\r\nAula 2\r\n<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/iel_hJ5hbJ8\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>\r\n\r\nAula 3\r\n<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/iel_hJ5hbJ8\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>', '2021-02-21 15:36:04', '15.00', 'upload/6032a8149ce06.jpg');
 
--- ===============================
--- PRODUTO
--- ===============================
-CREATE TABLE produto (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_categoria INT NOT NULL,
-    descricao VARCHAR(100) NOT NULL,
-    valor DOUBLE NOT NULL,
-    estoque INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-    CONSTRAINT fk_produto_categoria
-        FOREIGN KEY (id_categoria) REFERENCES categoria(id)
-);
+-- --------------------------------------------------------
+-- Estrutura da tabela `relatorio`
+-- --------------------------------------------------------
 
--- ===============================
--- PEDIDO
--- ===============================
-CREATE TABLE pedido (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    mesa VARCHAR(20) NULL,
-    data DATE NOT NULL,
-    observacao LONGTEXT NULL,
-    desconto DOUBLE DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-    CONSTRAINT fk_pedido_usuario
-        FOREIGN KEY (id_usuario) REFERENCES usuario(id)
-);
+DROP TABLE IF EXISTS `relatorio`;
+CREATE TABLE `relatorio` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `id_curso` int(11) NOT NULL,
+  `valor` decimal(10,0) NOT NULL,
+  `data_compra` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
--- ===============================
--- ITENS PEDIDO
--- ===============================
-CREATE TABLE itens_pedido (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
-    id_produto INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-    CONSTRAINT fk_itens_pedido_pedido
-        FOREIGN KEY (id_pedido) REFERENCES pedido(id),
-    CONSTRAINT fk_itens_pedido_produto
-        FOREIGN KEY (id_produto) REFERENCES produto(id)
-);
+--
+-- Inserindo dados na tabela `relatorio`
+--
 
--- ===============================
--- PAGAMENTO PEDIDO
--- ===============================
-CREATE TABLE pagamento_pedido (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
-    valor_pagamento DOUBLE NOT NULL,
-    tipo_pagamento VARCHAR(30) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-    CONSTRAINT fk_pagamento_pedido
-        FOREIGN KEY (id_pedido) REFERENCES pedido(id)
-);
+INSERT INTO `relatorio` (`id`, `id_usuario`, `id_curso`, `valor`, `data_compra`) VALUES
+(2, 2, 3, '15', '2021-02-21 16:02:41');
 
--- ===============================
--- LOGS
--- ===============================
-CREATE TABLE logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    tipo VARCHAR(20) NOT NULL,
-    acao VARCHAR(50) NOT NULL,
-    arquivos VARCHAR(255),
-    descricao TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_logs_usuario
-        FOREIGN KEY (id_usuario) REFERENCES usuario(id)
-);
+-- --------------------------------------------------------
+-- Estrutura da tabela `usuarios`
+-- --------------------------------------------------------
 
--- ===============================
--- PERFIL PADRÃO (ADMIN)
--- ===============================
-INSERT INTO perfil (id, nome)
-VALUES (1, 'Administrador');
+DROP TABLE IF EXISTS `usuarios`;
+CREATE TABLE `usuarios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha` varchar(256) NOT NULL,
+  `data_cadastro` datetime NOT NULL,
+  `creditos` decimal(10,2) DEFAULT '0.00',
+  `admin` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
--- ===============================
--- USUÁRIO PADRÃO DO SISTEMA
--- ===============================
-INSERT INTO usuario (
-    nome,
-    email,
-    email_verified_at,
-    senha,
-    id_perfil,
-    created_at
-) VALUES (
-    'Usuário Sistema',
-    'attini@system.com.br',
-    NOW(),
-    '$2y$10$2hQ6yV1N1fKJv6wZp0vKle8nG5kLZtZy9bZ1xU4N0r9Yp6nFv8y.e',
-    1,
-    NOW()
-);
+--
+-- Inserindo dados na tabela `usuarios`
+--
+
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_cadastro`, `creditos`, `admin`) VALUES
+(2, 'Jose da Silva', '56f017c2f9@firemailbox.club', '$2y$10$benV9ue4CO2OFmAdgIKpQevy8yKPGJ5dfsUkVW7iFeh69Otc.T7Ym', '2021-02-21 15:01:26', '585.00', 0),
+(3, 'ADMIN', 'admin@gmail.com', '$2y$10$75bPq8RHzJU4NTFY4LRWy.B.AtOOOx3QV7UbyvAQf/9tj.4H8W9.q', '2021-02-21 15:01:26', '35.00', 1);
+
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
